@@ -26,7 +26,6 @@ class TcsAssemblyWorker(ctx: ActorContext[TcsAssemblyMessage],
   var probeArmAssembly: Option[CommandService] = None
 
   override def onMessage(msg: TcsAssemblyMessage): Behavior[TcsAssemblyMessage] = {
-    logger.info(s"Received $msg")
     msg match {
       case Tick ⇒
         x = x + 10
@@ -35,9 +34,12 @@ class TcsAssemblyWorker(ctx: ActorContext[TcsAssemblyMessage],
         val setup       = Setup(componentInfo.prefix, CommandName("DemandState"), None).add(demandParam)
         probeArmAssembly.foreach(_.submit(setup))
       case ProbeArmAssembly(assembly) ⇒
+        logger.info(s"Received $msg")
         probeArmAssembly = Some(assembly)
         timer.startPeriodicTimer("key", Tick, 1000.millis)
-      case ProbeArmAssemblyRemoved ⇒ timer.cancel("key")
+      case ProbeArmAssemblyRemoved ⇒
+        logger.info(s"Received $msg")
+        timer.cancel("key")
     }
     this
   }

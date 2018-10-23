@@ -28,7 +28,6 @@ class ProbearmHcdWorker(ctx: ActorContext[ProbearmHcdMessage],
   var currentY = 0
 
   override def onMessage(msg: ProbearmHcdMessage): Behavior[ProbearmHcdMessage] = {
-    logger.info(s"Received $msg")
     msg match {
       case Tick ⇒
         currentX = moveX
@@ -36,6 +35,7 @@ class ProbearmHcdWorker(ctx: ActorContext[ProbearmHcdMessage],
         val currentPositionParam = IntKey.make("currentPosition").set(currentX, currentY)
         currentStatePublisher.publish(CurrentState(componentInfo.prefix, StateName("currentPosition")).add(currentPositionParam))
       case Move(x, y) ⇒
+        logger.info(s"Received $msg")
         moveX = x
         moveY = y
     }
